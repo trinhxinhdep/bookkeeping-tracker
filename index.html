@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>📚 Bookkeeping 8 Tuần — Tracker</title>
+<style>
+  :root{
+    --bg1:#fff8ef; --bg2:#fdf0f7;
+    --ink:#3d3a34; --muted:#9a9388;
+    --accent:#ffb35c; --accent2:#ff8fb3;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;font-family:"Helvetica Neue",Arial,sans-serif;}
+  body{
+    min-height:100vh;
+    background:linear-gradient(160deg,var(--bg1),var(--bg2));
+    color:var(--ink); padding:30px 20px 60px;
+  }
+  .wrap{max-width:880px;margin:0 auto;}
+  header{text-align:center;margin-bottom:20px;}
+  h1{font-size:26px;letter-spacing:.5px;}
+  h1 span{background:linear-gradient(90deg,var(--accent),var(--accent2));-webkit-background-clip:text;background-clip:text;color:transparent;}
+  .sub{color:var(--muted);font-size:13px;margin-top:5px;font-weight:600;}
+  .chips{display:flex;gap:10px;justify-content:center;margin-top:14px;flex-wrap:wrap;}
+  .chip{font-size:12px;font-weight:700;padding:6px 14px;border-radius:999px;background:#fff;box-shadow:0 2px 8px rgba(0,0,0,.06);}
+  .chip.moon{border:2px solid #b9a7e0;color:#6b5aa8;}
+  .chip.sun{border:2px solid #ffd9a0;color:#c07f22;}
+
+  .ring-wrap{display:flex;align-items:center;justify-content:center;gap:26px;margin:26px 0 6px;flex-wrap:wrap;}
+  .ring{position:relative;width:140px;height:140px;flex-shrink:0;}
+  .ring svg{transform:rotate(-90deg);}
+  .ring .pct{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;}
+  .ring .pct b{font-size:32px;line-height:1;}
+  .ring .pct small{font-size:11px;color:var(--muted);font-weight:700;margin-top:3px;}
+  .ring-side{max-width:320px;text-align:left;}
+  .ring-side .big{font-size:17px;font-weight:800;}
+  .ring-side .small{font-size:12.5px;color:var(--muted);margin-top:5px;line-height:1.6;}
+
+  .milestones{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin:18px 0 26px;}
+  .ms{font-size:11.5px;font-weight:700;padding:7px 13px;border-radius:999px;background:#fff;border:2px solid #e8e2d8;color:#9a9388;}
+  .ms.done{border-color:#9fd8a8;background:#eefaf0;color:#2e7d3e;}
+  .ms.now{border-color:#ffd9a0;background:#fff7ea;color:#b5741a;animation:pulse 2s infinite;}
+  @keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.06)}}
+
+  .weeks{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+  .week{background:#fff;border-radius:16px;padding:14px 16px;border-top:5px solid #ccc;box-shadow:0 3px 10px rgba(0,0,0,.05);transition:transform .15s;}
+  .week:hover{transform:translateY(-2px);}
+  .week.c1{border-top-color:#7fb8e0}.week.c2{border-top-color:#f2b36b}.week.c3{border-top-color:#9fd8a8}
+  .week.c4{border-top-color:#c9a8e0}.week.c5{border-top-color:#e88ba0}
+  .wtop{display:flex;justify-content:space-between;align-items:baseline;}
+  .wnum{font-size:15px;font-weight:800;}
+  .wdate{font-size:10.5px;color:var(--muted);font-weight:600;}
+  .wtitle{font-size:13px;font-weight:700;margin:3px 0 9px;}
+  .wtitle .star{opacity:.25;font-size:14px;transition:opacity .3s;}
+  .week.done .wtitle .star{opacity:1;}
+  .days{display:flex;gap:6px;margin-bottom:9px;}
+  .day{flex:1;text-align:center;font-size:10px;font-weight:800;padding:8px 0;border-radius:10px;cursor:pointer;border:2px solid #ece7dd;background:#faf8f4;color:#a39c90;transition:all .15s;user-select:none;}
+  .day.on{border-color:#9fd8a8;background:#eefaf0;color:#2e7d3e;}
+  .day:active{transform:scale(.9);}
+  .wbar{height:7px;border-radius:99px;background:#f0ece4;overflow:hidden;margin-bottom:9px;}
+  .wbar i{display:block;height:100%;width:0%;background:linear-gradient(90deg,var(--accent),var(--accent2));border-radius:99px;transition:width .4s;}
+  .tags{display:flex;gap:4px;flex-wrap:wrap;}
+  .tag{font-size:9.5px;font-weight:600;background:#f4f0e9;padding:2px 8px;border-radius:8px;color:#6d675c;}
+
+  footer{text-align:center;margin-top:30px;color:var(--muted);font-size:12px;font-weight:600;}
+  .reset{margin-top:10px;font-size:11.5px;font-weight:700;color:#c07f22;background:#fff7ea;border:2px solid #ffd9a0;border-radius:999px;padding:7px 18px;cursor:pointer;}
+  .reset:hover{background:#ffedcf;}
+  @media(max-width:640px){.weeks{grid-template-columns:1fr;}}
+
+  .confetti{position:fixed;top:-14px;width:10px;height:14px;z-index:99;pointer-events:none;animation:fall linear forwards;}
+  @keyframes fall{to{transform:translateY(108vh) rotate(720deg);}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>📚 Bookkeeping <span>· 8 tuần</span></h1>
+    <div class="sub">Intuit Certificate · 07/08 → 01/10 · bấm vào ngày để tick ✅</div>
+    <div class="chips">
+      <div class="chip moon">🌙 22:30 · Học bài mới</div>
+      <div class="chip sun">🌞 13:00 · Ôn bài</div>
+    </div>
+  </header>
+
+  <div class="ring-wrap">
+    <div class="ring">
+      <svg width="140" height="140">
+        <circle cx="70" cy="70" r="60" fill="none" stroke="#f0ece4" stroke-width="13"/>
+        <circle id="ringFg" cx="70" cy="70" r="60" fill="none" stroke="url(#grad)" stroke-width="13"
+          stroke-linecap="round" stroke-dasharray="377" stroke-dashoffset="377"/>
+        <defs>
+          <linearGradient id="grad" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0%" stop-color="#ffb35c"/><stop offset="100%" stop-color="#ff8fb3"/>
+          </linearGradient>
+        </defs>
+      </svg>
+      <div class="pct"><b id="pctNum">0%</b><small>hoàn thành</small></div>
+    </div>
+    <div class="ring-side">
+      <div class="big" id="msgLine">🌱 Bắt đầu nào Catherine!</div>
+      <div class="small" id="statLine">0 / 40 buổi học đã xong · mỗi tuần 5 buổi (T2–T6), cuối tuần nghỉ</div>
+    </div>
+  </div>
+
+  <div class="milestones" id="milestones"></div>
+
+  <div class="weeks" id="weeks"></div>
+
+  <footer>
+    🏁 Mục tiêu: có chứng chỉ Intuit trước 01/10 🎓
+    <br>
+    <button class="reset" onclick="resetAll()">🔄 Đặt lại tiến độ</button>
+  </footer>
+</div>
+
+<script>
+(function(){
+  const KEY = 'bk8w_tracker_v1';
+  let store = null;
+  try { store = localStorage; } catch(e){ store = null; }
+  const saved = store ? store.getItem(KEY) : null;
+  let state = saved ? JSON.parse(saved) : Array.from({length:8}, () => [false,false,false,false,false]);
+
+  const WEEK_META = [
+    {cls:'c1', title:'Course 1 · Hoàn tất Basics', tags:['Tỉ lệ tài chính','Quiz cuối khóa'], date:'07–13/08', ms:'Course 1'},
+    {cls:'c2', title:'Course 2 · Inventory', tags:['COGS','FIFO / LIFO'], date:'14–20/08', ms:'Course 2'},
+    {cls:'c2', title:'Course 2 · Sales', tags:['Doanh thu','Accounts Receivable'], date:'21–27/08', ms:'Course 2'},
+    {cls:'c3', title:'Course 3 · Expenses', tags:['Accounts Payable','Accruals'], date:'28/08–03/09', ms:'Course 3'},
+    {cls:'c3', title:'Course 3 · Payroll', tags:['W-2','Owner\'s Equity'], date:'04–10/09', ms:'Course 3'},
+    {cls:'c4', title:'Course 4 · Bank Recon', tags:['Month-end close'], date:'11–17/09', ms:'Course 4'},
+    {cls:'c4', title:'Course 4 · Báo cáo', tags:['Phân tích tài chính'], date:'18–24/09', ms:'Course 4'},
+    {cls:'c5', title:'Ôn tập + Thi', tags:['Intuit Exam 🎓'], date:'25/09–01/10', ms:'Exam'}
+  ];
+  const DAYS = ['T2','T3','T4','T5','T6'];
+  const TOTAL = 40;
+
+  const weeksEl = document.getElementById('weeks');
+  const msEl = document.getElementById('milestones');
+  const ringFg = document.getElementById('ringFg');
+  const pctNum = document.getElementById('pctNum');
+  const msgLine = document.getElementById('msgLine');
+  const statLine = document.getElementById('statLine');
+  const CIRC = 2 * Math.PI * 60;
+
+  function save(){
+    if(store){ try{ store.setItem(KEY, JSON.stringify(state)); }catch(e){} }
+  }
+  function countDone(){
+    return state.reduce((s,w)=>s+w.filter(Boolean).length,0);
+  }
+  function confetti(){
+    const colors=['#ffb35c','#ff8fb3','#9fd8a8','#7fb8e0','#c9a8e0'];
+    for(let i=0;i<40;i++){
+      const d=document.createElement('div');
+      d.className='confetti';
+      d.style.left=Math.random()*100+'vw';
+      d.style.background=colors[Math.floor(Math.random()*colors.length)];
+      d.style.animationDuration=(1.6+Math.random()*1.4)+'s';
+      d.style.transform='rotate('+Math.random()*360+'deg)';
+      document.body.appendChild(d);
+      setTimeout(()=>d.remove(),3200);
+    }
+  }
+  function render(){
+    const done = countDone();
+    const pct = Math.round(done/TOTAL*100);
+    pctNum.textContent = pct + '%';
+    ringFg.style.strokeDashoffset = CIRC * (1 - done/TOTAL);
+
+    if(done===0){ msgLine.textContent='🌱 Bắt đầu nào Catherine!'; }
+    else if(done<10){ msgLine.textContent='🔥 Đang khởi động, cố lên!'; }
+    else if(done<25){ msgLine.textContent='💪 Tiến triển đều đặn quá!'; }
+    else if(done<40){ msgLine.textContent='🚀 Gần về đích rồi!'; }
+    else{ msgLine.textContent='🎉🎓 Chúc mừng! Bạn đã hoàn thành!'; }
+    statLine.textContent = done + ' / ' + TOTAL + ' buổi học đã xong · mỗi tuần 5 buổi (T2–T6), cuối tuần nghỉ';
+
+    // milestones
+    const msState = [
+      state[0].every(Boolean),
+      state[1].every(Boolean) && state[2].every(Boolean),
+      state[3].every(Boolean) && state[4].every(Boolean),
+      state[5].every(Boolean) && state[6].every(Boolean),
+      state[7].every(Boolean)
+    ];
+    const msNames = ['Course 1','Course 2','Course 3','Course 4','🎓 Exam'];
+    msEl.innerHTML = msNames.map((n,i)=>{
+      const cls = msState[i] ? 'done' : (i===0 ? '' : (msState[i-1] ? 'now' : ''));
+      return '<div class="ms '+cls+'">'+(msState[i]?'✅':'⏳')+' '+n+'</div>';
+    }).join('');
+
+    // weeks
+    weeksEl.innerHTML = WEEK_META.map((m,wi)=>{
+      const doneW = state[wi].every(Boolean);
+      const n = state[wi].filter(Boolean).length;
+      const wbarPct = Math.round(n/5*100);
+      const daysHtml = DAYS.map((d,di)=>{
+        const on = state[wi][di] ? 'on' : '';
+        return '<div class="day '+on+'" onclick="toggleDay('+wi+','+di+')">'+d+'</div>';
+      }).join('');
+      const tags = m.tags.map(t=>'<span class="tag">'+t+'</span>').join('');
+      return '<div class="week '+m.cls+(doneW?' done':'')+'">'+
+        '<div class="wtop"><span class="wnum">Tuần '+(wi+1)+'</span><span class="wdate">'+m.date+'</span></div>'+
+        '<div class="wtitle">'+m.title+' <span class="star">'+(doneW?'⭐':'☆')+'</span></div>'+
+        '<div class="days">'+daysHtml+'</div>'+
+        '<div class="wbar"><i style="width:'+wbarPct+'%"></i></div>'+
+        '<div class="tags">'+tags+'</div>'+
+      '</div>';
+    }).join('');
+  }
+
+  window.toggleDay = function(wi,di){
+    const wasDone = state[wi].every(Boolean);
+    state[wi][di] = !state[wi][di];
+    const nowDone = state[wi].every(Boolean);
+    if(!wasDone && nowDone) confetti();
+    save(); render();
+  };
+  window.resetAll = function(){
+    state = Array.from({length:8}, () => [false,false,false,false,false]);
+    save(); render();
+  };
+  render();
+})();
+</script>
+</body>
+</html>
