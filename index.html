@@ -119,7 +119,16 @@
   let store = null;
   try { store = localStorage; } catch(e){ store = null; }
   const saved = store ? store.getItem(KEY) : null;
-  let state = saved ? JSON.parse(saved) : Array.from({length:8}, () => [false,false,false,false,false]);
+  let state = saved ? JSON.parse(saved) : [
+    [true,true,true,true,true], // Tuần 1: Course 1 ✅
+    [true,true,true,true,true], // Tuần 2: Course 2 ✅
+    [true,true,true,true,true], // Tuần 3: Course 2 ✅
+    [true,true,true,true,true], // Tuần 4: Course 3 ✅
+    [true,true,true,true,true], // Tuần 5: Course 3 ✅
+    [false,false,false,false,false], // Tuần 6: Course 4
+    [false,false,false,false,false], // Tuần 7: Course 4
+    [false,false,false,false,false]  // Tuần 8: Ôn + Thi
+  ];
 
   const WEEK_META = [
     {cls:'c1', title:'Course 1 · Hoàn tất Basics', tags:['✅ Xong'], date:'07–13/08', ms:'Course 1'},
