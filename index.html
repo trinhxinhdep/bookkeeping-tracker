@@ -50,6 +50,7 @@
   .week.c4b{border-top-color:#f2b36b;}
   .week.c5{border-top-color:#c9a8e0;}
   .week.c6{border-top-color:#e88ba0;}
+  .week.c7{border-top-color:#7fb8e0;}
   .wtop{display:flex;justify-content:space-between;align-items:baseline;}
   .wnum{font-size:15px;font-weight:800;}
   .wdate{font-size:11px;color:var(--muted);font-weight:700;}
@@ -126,23 +127,30 @@
 
   // 5 giai đoạn: [đã xong nền tảng] + 4 giai đoạn còn lại (mỗi giai đoạn 5 ngày T2-T6)
   const G = 5; // số ngày tick mỗi giai đoạn
-  let state = saved ? JSON.parse(saved) : [
+  let state = saved ? JSON.parse(saved) : null;
+  const freshState = [
     [true,true,true,true,true], // ✅ Nền tảng C1-C3 + C4 L1-2 (xong trước 07/08)
-    [false,false,false,false,false], // C4 L3-6: 07-12/08
-    [false,false,false,false,false], // C4 L7-8 + Quiz: 13-16/08
-    [false,false,false,false,false], // Ôn tập: 17-22/08
-    [false,false,false,false,false]  // 🎓 Thi Exam: từ 23/08
+    [false,false,false,false,false], // Ôn tập C1-3: 07-11/08
+    [false,false,false,false,false], // C4 L3-6: 12-16/08
+    [false,false,false,false,false], // C4 L7-8 + Quiz: 17-21/08
+    [false,false,false,false,false], // Ôn tập tổng: 22-26/08
+    [false,false,false,false,false]  // 🎓 Thi Exam: từ 27/08
   ];
+  if(!state || state.length < 6){
+    state = freshState;
+    if(store){ try{ store.setItem(KEY, JSON.stringify(state)); }catch(e){} }
+  }
 
   const STAGE_META = [
     {cls:'c0', title:'✅ Nền tảng — Course 1-3 + C4 L1-2', tags:['Đã hoàn thành'], date:'trước 07/08', ms:'Nền tảng'},
-    {cls:'c4a', title:'Course 4 · Lessons 3-6', tags:['Income stmt','Cash flow','Bank recon'], date:'07–12/08', ms:'C4 L3-6'},
-    {cls:'c4b', title:'Course 4 · Lessons 7-8 + Quiz', tags:['Tổng hợp','Quiz cuối'], date:'13–16/08', ms:'C4 L7-8'},
-    {cls:'c5', title:'Ôn tập toàn bộ 4 khóa', tags:['Công thức tỉ lệ','Làm lại quiz'], date:'17–22/08', ms:'Ôn tập'},
-    {cls:'c6', title:'🎓 Thi Intuit Exam', tags:['Chứng chỉ!'], date:'23/08 trở đi', ms:'Exam'}
+    {cls:'c7', title:'Ôn tập Course 1 · 2 · 3', tags:['Tỉ lệ tài chính','Báo cáo','Chu kỳ kế toán'], date:'07–11/08', ms:'Ôn C1-3'},
+    {cls:'c4a', title:'Course 4 · Lessons 3-6', tags:['Income stmt','Cash flow','Bank recon'], date:'12–16/08', ms:'C4 L3-6'},
+    {cls:'c4b', title:'Course 4 · Lessons 7-8 + Quiz', tags:['Tổng hợp','Quiz cuối'], date:'17–21/08', ms:'C4 L7-8'},
+    {cls:'c5', title:'Ôn tập tổng hợp', tags:['Công thức tỉ lệ','Làm lại quiz'], date:'22–26/08', ms:'Ôn tổng'},
+    {cls:'c6', title:'🎓 Thi Intuit Exam', tags:['Chứng chỉ!'], date:'27/08 trở đi', ms:'Exam'}
   ];
   const DAYS = ['T2','T3','T4','T5','T6'];
-  const TOTAL = 25; // 5 giai đoạn × 5 ngày
+  const TOTAL = 30; // 6 giai đoạn × 5 ngày
 
   const weeksEl = document.getElementById('weeks');
   const msEl = document.getElementById('milestones');
@@ -221,6 +229,7 @@
   window.resetAll = function(){
     state = [
       [true,true,true,true,true],
+      [false,false,false,false,false],
       [false,false,false,false,false],
       [false,false,false,false,false],
       [false,false,false,false,false],
